@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nestjs-app-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nestjs-app
+  template:
+    metadata:
+      labels:
+        app: nestjs-app
+    spec:
+      containers:
+        - name: nestjs-app
+          image: myrepo/nestjs-app:${GITHUB_RUN_ID} # Dynamic image using GitHub Actions run ID
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: DATABASE_URL
